@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bentonite-bg: #ffffff;
+  --bentonite-card: #FDFAF5;
+  --bentonite-trainer: #5C4A3A;
+  --bentonite-learner: #4A7C6F;
+  --bentonite-text-primary: #2C2118;
+  --bentonite-text-secondary: #7A6555;
+  --bentonite-border: #DDD5C8;
+  --bentonite-trainer-bg: #EDE0D0;
+  --bentonite-learner-bg: #D8EAE6;
+  --bentonite-collapsed: #F5F0E8;
+  --bentonite-constructive: #5A7A9A;
+  --bentonite-active: #A07030;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--bentonite-bg);
+  color: var(--bentonite-text-primary);
+  font-family: 'Inter', system-ui, sans-serif;
+  overscroll-behavior: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Prevent text selection on UI elements for native feel */
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth scrolling for inputs */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Hide scrollbars but keep functionality */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Card height transition for observation screen */
+.obs-card {
+  transition: height 420ms cubic-bezier(0.4, 0, 0.2, 1),
+    opacity 420ms ease;
+  overflow: hidden;
+}
+
+/* Chips fade transition */
+.chips-wrap {
+  transition: opacity 180ms ease;
+}
+
+/* Progress bar fill animations */
+@keyframes fillBar {
+  from {
+    width: 0%;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.bar-trainer {
+  animation: fillBar 60s linear forwards;
+  animation-delay: 420ms;
+  animation-fill-mode: both;
+}
+
+.bar-learner {
+  animation: fillBar 120s linear forwards;
+  animation-delay: 420ms;
+  animation-fill-mode: both;
+}
+
+/* Chip press animation */
+.chip-press {
+  transition: transform 100ms ease-out, background-color 150ms ease-out, color 150ms ease-out, border-color 150ms ease-out;
+}
+
+.chip-press:active {
+  transform: scale(0.96);
+}
+
+/* Bottom sheet animation */
+@keyframes slideUp {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    transform: translateY(0);
+  }
+
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.sheet-enter {
+  animation: slideUp 300ms ease-out forwards;
+}
+
+.sheet-exit {
+  animation: slideDown 200ms ease-in forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.fade-in {
+  animation: fadeIn 200ms ease-out forwards;
+}
+
+/* Fade for screen transitions */
+@keyframes screenFade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.screen-fade {
+  animation: screenFade 250ms ease-out forwards;
+}
