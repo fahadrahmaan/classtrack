@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { calculateIcap, formatDate, formatDuration, calcTotalDuration, getDominantLevel, groupWindowsByICAP } from '../utils';
 import { type SessionData, type ObservationWindow, type IcapLevel } from "../types";
 
@@ -414,6 +414,9 @@ export default function TrainerDashboard({
     onBack
 }: TrainerDashboardProps) {
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
+    const [aiInsight, setAiInsight] = useState<string | null>(null);
+    const [insightLoading, setInsightLoading] = useState(true);
+    const [insightFailed, setInsightFailed] = useState(false);
 
     const mappedSessions = sessions.map(s => {
         const icapRes = calculateIcap(s.windows);
@@ -469,7 +472,55 @@ export default function TrainerDashboard({
 
     const icapKeys: IcapKey[] = ["interactive", "constructive", "active", "passive"];
 
-    const narrative = lastSession?.windowLog ? buildSessionNarrative(lastSession.windowLog, lastSession.icap) : null;
+    const fallbackNarrative = lastSession?.windowLog ? buildSessionNarrative(lastSession.windowLog, lastSession.icap) : null;
+
+    useEffect(() => {
+        let cancelled = false;
+
+        async function fetchInsight() {
+            if (!lastSession) {
+                setInsightLoading(false);
+                return;
+            }
+
+            setInsightLoading(true);
+            setInsightFailed(false);
+
+            // Timeout after 6 seconds so the demo never hangs
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 6000);
+
+            try {
+                const res = await fetch('/api/generate-insight', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        windowLog: lastSession.windowLog,
+                        trainerName: TRAINER.name,
+                        topic: lastSession.topic
+                    }),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+                if (!res.ok) throw new Error('API error');
+
+                const data = await res.json();
+                if (!cancelled) {
+                    setAiInsight(data.insight);
+                    setInsightLoading(false);
+                }
+            } catch (err) {
+                if (!cancelled) {
+                    setInsightFailed(true);
+                    setInsightLoading(false);
+                }
+            }
+        }
+
+        fetchInsight();
+        return () => { cancelled = true; };
+    }, [lastSession?.id, TRAINER.name, lastSession?.topic]);
 
     return (
         <div
@@ -595,59 +646,74 @@ export default function TrainerDashboard({
             </section>
 
             {/* Session Pattern Card */}
-            {narrative && (
+            {fallbackNarrative && (
                 <div style={{
                   background: '#FDFAF5',
                   border: '1px solid #DDD5C8',
                   borderRadius: '16px',
                   padding: '18px 20px',
-                  marginBottom: '16px'
+                  marginBottom: '16px',
+                  minHeight: '140px' // Added minHeight to help reserve the height
                 }}>
                   <div style={{
-                    fontSize: '11px',
-                    textTransform: 'uppercase',
-                    letterSpacing: '0.1em',
-                    color: '#7A6555',
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                     marginBottom: '10px'
                   }}>
-                    Last Session Pattern
-                  </div>
-
-                  <div style={{
-                    fontSize: '15px',
-                    color: '#2C2118',
-                    lineHeight: '1.6',
-                    marginBottom: narrative.timingNote ? '10px' : '0'
-                  }}>
-                    {narrative.headline}
-                  </div>
-
-                  {narrative.timingNote && (
                     <div style={{
-                      fontSize: '13px',
-                      color: '#4A7C6F',
-                      lineHeight: '1.6',
-                      paddingTop: '10px',
-                      borderTop: '1px solid #DDD5C8'
+                      fontSize: '11px',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.1em',
+                      color: '#7A6555'
                     }}>
-                      {narrative.timingNote}
+                      Last Session Pattern
+                    </div>
+                    {!insightLoading && !insightFailed && (
+                      <div style={{
+                        fontSize: '9px',
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                        color: '#4A7C6F',
+                        background: '#D8EAE6',
+                        padding: '2px 8px',
+                        borderRadius: '20px'
+                      }}>
+                        AI Coach
+                      </div>
+                    )}
+                  </div>
+
+                  {insightLoading && (
+                    <div style={{ fontSize: '14px', color: '#9A8878' }}>
+                      Generating insight...
                     </div>
                   )}
 
-                  {narrative.groups.length > 0 && (
-                    <div style={{ display: 'flex', gap: '4px', marginTop: '12px' }}>
-                      {narrative.groups.map((g, i) => (
-                        <div
-                          key={i}
-                          style={{
-                            flex: g.windows.length,
-                            height: '6px',
-                            borderRadius: '3px',
-                            background: g.icap ? ICAP_COLORS[(g.icap as string).toLowerCase() as IcapKey] : '#DDD5C8'
-                          }}
-                        />
-                      ))}
+                  {!insightLoading && !insightFailed && aiInsight && (
+                    <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
+                      {aiInsight}
                     </div>
+                  )}
+
+                  {!insightLoading && insightFailed && (
+                    <>
+                      <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
+                        {fallbackNarrative.headline}
+                      </div>
+                      {fallbackNarrative.timingNote && (
+                        <div style={{
+                          fontSize: '13px',
+                          color: '#4A7C6F',
+                          lineHeight: '1.6',
+                          paddingTop: '10px',
+                          marginTop: '10px',
+                          borderTop: '1px solid #DDD5C8'
+                        }}>
+                          {fallbackNarrative.timingNote}
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
             )}
