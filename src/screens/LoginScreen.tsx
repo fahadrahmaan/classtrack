@@ -6,6 +6,7 @@ interface Props {
 }
 
 export default function LoginScreen({ onLogin }: Props) {
+  const [role, setRole] = useState<'trainer' | 'observer'>('trainer');
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -22,23 +23,18 @@ export default function LoginScreen({ onLogin }: Props) {
       return;
     }
 
-    if (cleanUsername === 'trainer' && cleanPassword === 'password') {
-      onLogin({ username: 'Ameen', role: 'trainer' });
-    } else if (cleanUsername === 'observer' && cleanPassword === 'password') {
-      onLogin({ username: 'Observer Admin', role: 'observer' });
+    if (cleanPassword === 'password') {
+      onLogin({ username: cleanUsername, role });
     } else {
-      setError('Invalid username or password');
+      setError('Invalid password. Hint: use "password"');
     }
   };
 
-  const handleQuickFill = (role: 'trainer' | 'observer') => {
+  const handleQuickFill = (quickRole: 'trainer' | 'observer') => {
     setError(null);
-    setUsername(role);
+    setRole(quickRole);
+    setUsername(quickRole === 'trainer' ? 'Ameen' : 'Observer Admin');
     setPassword('password');
-    onLogin({
-      username: role === 'trainer' ? 'Ameen' : 'Observer Admin',
-      role,
-    });
   };
 
   return (
@@ -84,6 +80,25 @@ export default function LoginScreen({ onLogin }: Props) {
               </div>
             )}
 
+            {/* Role Toggle */}
+            <div className="flex rounded-chip border overflow-hidden" style={{ borderColor: '#DDD5C8' }}>
+              {(['trainer', 'observer'] as const).map((r) => (
+                <button
+                  key={r}
+                  type="button"
+                  onClick={() => setRole(r)}
+                  className="flex-1 py-3 text-sm font-medium transition-colors no-select capitalize"
+                  style={{
+                    background: role === r ? '#5C4A3A' : '#FDFAF5',
+                    color: role === r ? '#FFFFFF' : '#7A6555',
+                    minHeight: 44,
+                  }}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+
             {/* Username */}
             <div>
               <label 
@@ -96,7 +111,7 @@ export default function LoginScreen({ onLogin }: Props) {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="e.g. trainer or observer"
+                placeholder="Enter your name"
                 className="w-full rounded-chip border bg-white px-4 py-3 text-sm text-bentonite-text-primary placeholder:text-bentonite-text-secondary/50 outline-none transition-colors focus:border-bentonite-trainer"
                 style={{ borderColor: 'var(--bentonite-border)', minHeight: 48 }}
               />

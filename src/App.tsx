@@ -104,7 +104,7 @@ export default function App() {
       {screen === 'trainer-dashboard' && (
         <TrainerDashboard
           trainerName={user?.username || 'Trainer'}
-          sessions={savedSessions.filter(s => s.trainer === user?.username)}
+          sessions={savedSessions.filter(s => s.trainer?.trim().toLowerCase() === user?.username?.trim().toLowerCase())}
           onBack={handleLogout}
         />
       )}

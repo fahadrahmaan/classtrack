@@ -486,9 +486,9 @@ export default function TrainerDashboard({
             setInsightLoading(true);
             setInsightFailed(false);
 
-            // Timeout after 6 seconds so the demo never hangs
+            // Timeout after 15 seconds for API cold starts
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 6000);
+            const timeoutId = setTimeout(() => controller.abort(), 15000);
 
             try {
                 const res = await fetch('/api/generate-insight', {
@@ -566,157 +566,161 @@ export default function TrainerDashboard({
             </header>
 
             {/* Section 2 — Persona Card */}
-            <section
-                style={{
-                    background: persona.bg,
-                    border: `1px solid ${persona.border}`,
-                    borderRadius: "16px",
-                    padding: "20px",
-                    marginBottom: "24px",
-                }}
-            >
-                <div className="flex items-center justify-between">
-                    <span
+            {lastSession && (
+                <section
+                    style={{
+                        background: persona.bg,
+                        border: `1px solid ${persona.border}`,
+                        borderRadius: "16px",
+                        padding: "20px",
+                        marginBottom: "24px",
+                    }}
+                >
+                    <div className="flex items-center justify-between">
+                        <span
+                            style={{
+                                fontSize: "11px",
+                                color: "#7A6555",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.12em",
+                            }}
+                        >
+                            Your Persona
+                        </span>
+                        <span
+                            style={{
+                                fontSize: "12px",
+                                color: persona.color,
+                                backgroundColor: hexToRgba(persona.color, 0.2),
+                                borderRadius: "20px",
+                                padding: "4px 12px",
+                            }}
+                        >
+                            {TRAINER.persona}
+                        </span>
+                    </div>
+
+                    <h2
                         style={{
-                            fontSize: "11px",
-                            color: "#7A6555",
-                            textTransform: "uppercase",
-                            letterSpacing: "0.12em",
-                        }}
-                    >
-                        Your Persona
-                    </span>
-                    <span
-                        style={{
-                            fontSize: "12px",
+                            fontSize: "22px",
                             color: persona.color,
-                            backgroundColor: hexToRgba(persona.color, 0.2),
-                            borderRadius: "20px",
-                            padding: "4px 12px",
+                            fontWeight: 600,
+                            marginTop: "12px",
                         }}
                     >
                         {TRAINER.persona}
-                    </span>
-                </div>
+                    </h2>
 
-                <h2
-                    style={{
-                        fontSize: "22px",
-                        color: persona.color,
-                        fontWeight: 600,
-                        marginTop: "12px",
-                    }}
-                >
-                    {TRAINER.persona}
-                </h2>
-
-                <p
-                    style={{
-                        fontSize: "14px",
-                        color: "#7A6555",
-                        lineHeight: 1.6,
-                        marginTop: "8px",
-                    }}
-                >
-                    {persona.description}
-                </p>
-
-                <div
-                    className="flex items-center justify-between"
-                    style={{
-                        marginTop: "16px",
-                        paddingTop: "12px",
-                        borderTop: "1px solid",
-                        borderColor: persona.border,
-                    }}
-                >
-                    <span
+                    <p
                         style={{
-                            fontSize: "10px",
-                            color: "#9A8878",
-                            textTransform: "uppercase",
+                            fontSize: "14px",
+                            color: "#7A6555",
+                            lineHeight: 1.6,
+                            marginTop: "8px",
                         }}
                     >
-                        Next Target
-                    </span>
-                    <span style={{ fontSize: "12px", fontWeight: 600, color: persona.color }}>
-                        {persona.target}
-                    </span>
-                </div>
-            </section>
+                        {persona.description}
+                    </p>
+
+                    <div
+                        className="flex items-center justify-between"
+                        style={{
+                            marginTop: "16px",
+                            paddingTop: "12px",
+                            borderTop: "1px solid",
+                            borderColor: persona.border,
+                        }}
+                    >
+                        <span
+                            style={{
+                                fontSize: "10px",
+                                color: "#9A8878",
+                                textTransform: "uppercase",
+                            }}
+                        >
+                            Next Target
+                        </span>
+                        <span style={{ fontSize: "12px", fontWeight: 600, color: persona.color }}>
+                            {persona.target}
+                        </span>
+                    </div>
+                </section>
+            )}
 
             {/* Session Pattern Card */}
-            {fallbackNarrative && (
+            <div style={{
+                background: '#FDFAF5',
+                border: '1px solid #DDD5C8',
+                borderRadius: '16px',
+                padding: '18px 20px',
+                marginBottom: '16px',
+                minHeight: '140px'
+            }}>
                 <div style={{
-                  background: '#FDFAF5',
-                  border: '1px solid #DDD5C8',
-                  borderRadius: '16px',
-                  padding: '18px 20px',
-                  marginBottom: '16px',
-                  minHeight: '140px' // Added minHeight to help reserve the height
-                }}>
-                  <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',
                     alignItems: 'center',
                     marginBottom: '10px'
-                  }}>
+                }}>
                     <div style={{
-                      fontSize: '11px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.1em',
-                      color: '#7A6555'
-                    }}>
-                      Last Session Pattern
-                    </div>
-                    {!insightLoading && !insightFailed && (
-                      <div style={{
-                        fontSize: '9px',
+                        fontSize: '11px',
                         textTransform: 'uppercase',
-                        letterSpacing: '0.08em',
-                        color: '#4A7C6F',
-                        background: '#D8EAE6',
-                        padding: '2px 8px',
-                        borderRadius: '20px'
-                      }}>
-                        AI Coach
-                      </div>
-                    )}
-                  </div>
-
-                  {insightLoading && (
-                    <div style={{ fontSize: '14px', color: '#9A8878' }}>
-                      Generating insight...
+                        letterSpacing: '0.1em',
+                        color: '#7A6555'
+                    }}>
+                        AI Coach Insight
                     </div>
-                  )}
-
-                  {!insightLoading && !insightFailed && aiInsight && (
-                    <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
-                      {aiInsight}
-                    </div>
-                  )}
-
-                  {!insightLoading && insightFailed && (
-                    <>
-                      <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
-                        {fallbackNarrative.headline}
-                      </div>
-                      {fallbackNarrative.timingNote && (
+                    {(!insightLoading && !insightFailed && aiInsight) && (
                         <div style={{
-                          fontSize: '13px',
-                          color: '#4A7C6F',
-                          lineHeight: '1.6',
-                          paddingTop: '10px',
-                          marginTop: '10px',
-                          borderTop: '1px solid #DDD5C8'
+                            fontSize: '9px',
+                            textTransform: 'uppercase',
+                            letterSpacing: '0.08em',
+                            color: '#4A7C6F',
+                            background: '#D8EAE6',
+                            padding: '2px 8px',
+                            borderRadius: '20px'
                         }}>
-                          {fallbackNarrative.timingNote}
+                            AI Generated
                         </div>
-                      )}
-                    </>
-                  )}
+                    )}
                 </div>
-            )}
+
+                {!lastSession ? (
+                    <div style={{ fontSize: '15px', color: '#7A6555', lineHeight: '1.6', fontStyle: 'italic' }}>
+                        Complete your first classroom observation to receive AI-powered coaching insights.
+                    </div>
+                ) : insightLoading ? (
+                    <div style={{ fontSize: '14px', color: '#9A8878', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <div className="animate-spin w-4 h-4 border-2 border-[#9A8878] border-t-transparent rounded-full" />
+                        Analyzing session data...
+                    </div>
+                ) : (!insightLoading && !insightFailed && aiInsight) ? (
+                    <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
+                        {aiInsight}
+                    </div>
+                ) : fallbackNarrative ? (
+                    <>
+                        <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
+                            {fallbackNarrative.headline}
+                        </div>
+                        {fallbackNarrative.timingNote && (
+                            <div style={{
+                                fontSize: '13px',
+                                color: '#4A7C6F',
+                                lineHeight: '1.6',
+                                paddingTop: '10px',
+                                marginTop: '10px',
+                                borderTop: '1px solid #DDD5C8'
+                            }}>
+                                {fallbackNarrative.timingNote}
+                            </div>
+                        )}
+                        <div style={{ fontSize: '12px', color: '#A07030', marginTop: '12px' }}>
+                            (AI generation unavailable)
+                        </div>
+                    </>
+                ) : null}
+            </div>
 
             {/* Section 3 — Last Session Stats */}
             {lastSession && (
@@ -830,58 +834,60 @@ export default function TrainerDashboard({
             )}
 
             {/* Section 5 — Next Action Card */}
-            <section
-                style={{
-                    background: "#D8EAE6",
-                    border: "1px solid #A0CEC5",
-                    borderRadius: "16px",
-                    padding: "20px",
-                    marginBottom: "24px",
-                }}
-            >
-                <span
+            {lastSession && (
+                <section
                     style={{
-                        fontSize: "11px",
-                        color: "#4A7C6F",
-                        textTransform: "uppercase",
-                        letterSpacing: "0.12em",
-                    }}
-                >
-                    Try This Next Session
-                </span>
-
-                <p
-                    style={{
-                        fontSize: "14px",
-                        color: "#2C2118",
-                        lineHeight: 1.65,
-                        marginTop: "10px",
-                    }}
-                >
-                    {persona.action}
-                </p>
-
-                <div
-                    style={{
-                        marginTop: "16px",
-                        paddingTop: "12px",
-                        borderTop: "1px solid #A0CEC5",
+                        background: "#D8EAE6",
+                        border: "1px solid #A0CEC5",
+                        borderRadius: "16px",
+                        padding: "20px",
+                        marginBottom: "24px",
                     }}
                 >
                     <span
                         style={{
                             fontSize: "11px",
                             color: "#4A7C6F",
-                            backgroundColor: hexToRgba("#4A7C6F", 0.2),
-                            borderRadius: "20px",
-                            padding: "4px 10px",
-                            display: "inline-block",
+                            textTransform: "uppercase",
+                            letterSpacing: "0.12em",
                         }}
                     >
-                        {persona.target}
+                        Try This Next Session
                     </span>
-                </div>
-            </section>
+
+                    <p
+                        style={{
+                            fontSize: "14px",
+                            color: "#2C2118",
+                            lineHeight: 1.65,
+                            marginTop: "10px",
+                        }}
+                    >
+                        {persona.action}
+                    </p>
+
+                    <div
+                        style={{
+                            marginTop: "16px",
+                            paddingTop: "12px",
+                            borderTop: "1px solid #A0CEC5",
+                        }}
+                    >
+                        <span
+                            style={{
+                                fontSize: "11px",
+                                color: "#4A7C6F",
+                                backgroundColor: hexToRgba("#4A7C6F", 0.2),
+                                borderRadius: "20px",
+                                padding: "4px 10px",
+                                display: "inline-block",
+                            }}
+                        >
+                            {persona.target}
+                        </span>
+                    </div>
+                </section>
+            )}
 
             {/* Section 6 — Session History */}
             <section>
