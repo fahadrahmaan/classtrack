@@ -51,7 +51,7 @@ export default function SessionSetupScreen({ onStart, onShowSaved, onShowDashboa
       <div className="px-6 pt-14 pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-bentonite-text-primary tracking-tight">LEOP</h1>
+            <h1 className="text-2xl font-bold text-bentonite-text-primary tracking-tight">ClassTrack</h1>
             <p className="text-xs text-bentonite-text-secondary mt-0.5" style={{ letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Classroom Observation
             </p>

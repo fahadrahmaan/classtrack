@@ -37,6 +37,6 @@ export interface User {
   role: 'trainer' | 'observer';
 }
 
-export type Screen = 'login' | 'observer-dashboard' | 'setup' | 'observation' | 'summary' | 'saved' | 'trainer-dashboard';
+export type Screen = 'login' | 'observer-dashboard' | 'setup' | 'observation' | 'summary' | 'saved' | 'trainer-dashboard' | 'trainer-selection';
 
 export type IcapLevel = 'Interactive' | 'Constructive' | 'Active' | 'Passive';

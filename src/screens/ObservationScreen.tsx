@@ -19,7 +19,11 @@ export default function ObservationScreen({ setup, onEnd }: Props) {
   const [elapsedSeconds, setElapsedSeconds] = useState(0);
 
   const startTimeRef = useRef<string>(new Date().toISOString());
-  const wakeLockRef = useRef<unknown>(null);
+  interface WakeLockSentinel {
+    release(): Promise<void>;
+  }
+
+  const wakeLockRef = useRef<WakeLockSentinel | null>(null);
 
   // Refs for interval access
   const activeCardRef = useRef<WindowType>('trainer');
@@ -34,7 +38,7 @@ export default function ObservationScreen({ setup, onEnd }: Props) {
     const requestWakeLock = async () => {
       try {
         if ('wakeLock' in navigator) {
-          wakeLockRef.current = await (navigator as unknown as { wakeLock: { request: (type: string) => Promise<unknown> } }).wakeLock.request('screen');
+          wakeLockRef.current = await (navigator as unknown as { wakeLock: { request: (type: string) => Promise<WakeLockSentinel> } }).wakeLock.request('screen');
         }
       } catch { /* not supported */ }
     };

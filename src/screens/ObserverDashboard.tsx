@@ -12,12 +12,12 @@ interface Props {
 const ICAP_LEVELS: IcapLevel[] = ['Interactive', 'Constructive', 'Active', 'Passive'];
 
 export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, onViewSession, onLogout }: Props) {
-  
+
   // Calculate aggregate metrics
   const totalSessions = sessions.length;
-  
+
   const totalLearners = sessions.reduce((acc, s) => acc + (s.learnerCount || 0), 0);
-  
+
   const totalSeconds = sessions.reduce((acc, s) => {
     return acc + calcTotalDuration(s.startTime, s.endTime);
   }, 0);
@@ -37,14 +37,14 @@ export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, o
 
   return (
     <div className="min-h-screen flex flex-col px-4 py-6 pb-12 screen-fade" style={{ background: 'var(--bentonite-bg)' }}>
-      
+
       {/* Header bar */}
-      <div 
+      <div
         className="flex items-center justify-between pb-4 border-b mb-6"
         style={{ borderColor: 'var(--bentonite-border)', paddingTop: 'max(12px, env(safe-area-inset-top))' }}
       >
         <div>
-          <h1 className="text-xl font-bold text-bentonite-text-primary tracking-tight">LEOP Observer</h1>
+          <h1 className="text-xl font-bold text-bentonite-text-primary tracking-tight">ClassTrack Observer</h1>
           <p className="text-[10px] text-bentonite-text-secondary mt-0.5" style={{ letterSpacing: '0.12em', textTransform: 'uppercase' }}>
             Classroom Observation
           </p>
@@ -102,9 +102,9 @@ export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, o
           Overview Metrics
         </h3>
         <div className="grid grid-cols-3 gap-3">
-          
+
           {/* Observed Sessions */}
-          <div 
+          <div
             className="p-3.5 rounded-card border text-center"
             style={{ background: 'var(--bentonite-card)', borderColor: 'var(--bentonite-border)' }}
           >
@@ -113,7 +113,7 @@ export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, o
           </div>
 
           {/* Observed Learners */}
-          <div 
+          <div
             className="p-3.5 rounded-card border text-center"
             style={{ background: 'var(--bentonite-card)', borderColor: 'var(--bentonite-border)' }}
           >
@@ -122,7 +122,7 @@ export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, o
           </div>
 
           {/* Observation Time */}
-          <div 
+          <div
             className="p-3.5 rounded-card border text-center"
             style={{ background: 'var(--bentonite-card)', borderColor: 'var(--bentonite-border)' }}
           >
@@ -140,7 +140,7 @@ export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, o
         </h3>
 
         {recentSessions.length === 0 ? (
-          <div 
+          <div
             className="rounded-card border p-8 text-center space-y-2"
             style={{ background: 'var(--bentonite-card)', borderColor: 'var(--bentonite-border)' }}
           >
