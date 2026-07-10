@@ -1,4 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
+const MODEL = "gemini-flash-lite-latest";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
@@ -58,7 +59,7 @@ Requirements:
 
   try {
     const result = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: MODEL,
       contents: prompt,
       config: {
         temperature: 0.7,
