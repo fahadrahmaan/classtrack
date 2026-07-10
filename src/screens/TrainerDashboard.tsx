@@ -341,71 +341,71 @@ function SessionCard({
 }
 
 function buildSessionNarrative(windowLog: ObservationWindow[], icapStats: { interactive: number; constructive: number; active: number; passive: number }) {
-  if (!windowLog || windowLog.length === 0) {
-    return { headline: "No session data available yet.", timingNote: null, groups: [] };
-  }
-
-  const groups = groupWindowsByICAP(windowLog, getDominantLevel);
-
-  // Find the dominant ICAP level from the actual chip stats to match the UI
-  const rank: Record<IcapLevel, number> = { Interactive: 4, Constructive: 3, Active: 2, Passive: 1 };
-  
-  let dominantIcap: IcapLevel = 'Passive';
-  let dominantPct = 0;
-  
-  const icapKeys: IcapLevel[] = ['Interactive', 'Constructive', 'Active', 'Passive'];
-  icapKeys.forEach(level => {
-    const pct = icapStats[level.toLowerCase() as keyof typeof icapStats];
-    if (pct >= dominantPct) {
-      if (pct > dominantPct || rank[level] > rank[dominantIcap]) {
-          dominantPct = pct;
-          dominantIcap = level;
-      }
+    if (!windowLog || windowLog.length === 0) {
+        return { headline: "No session data available yet.", timingNote: null, groups: [] };
     }
-  });
 
-  // Find the highest ICAP level present for the "stretch" note
-  let bestIcap: IcapLevel = 'Passive';
-  let bestRank = 0;
-  icapKeys.forEach(level => {
-    const pct = icapStats[level.toLowerCase() as keyof typeof icapStats];
-    if (pct > 0 && rank[level] > bestRank) {
-      bestRank = rank[level];
-      bestIcap = level;
+    const groups = groupWindowsByICAP(windowLog, getDominantLevel);
+
+    // Find the dominant ICAP level from the actual chip stats to match the UI
+    const rank: Record<IcapLevel, number> = { Interactive: 4, Constructive: 3, Active: 2, Passive: 1 };
+
+    let dominantIcap: IcapLevel = 'Passive';
+    let dominantPct = 0;
+
+    const icapKeys: IcapLevel[] = ['Interactive', 'Constructive', 'Active', 'Passive'];
+    icapKeys.forEach(level => {
+        const pct = icapStats[level.toLowerCase() as keyof typeof icapStats];
+        if (pct >= dominantPct) {
+            if (pct > dominantPct || rank[level] > rank[dominantIcap]) {
+                dominantPct = pct;
+                dominantIcap = level;
+            }
+        }
+    });
+
+    // Find the highest ICAP level present for the "stretch" note
+    let bestIcap: IcapLevel = 'Passive';
+    let bestRank = 0;
+    icapKeys.forEach(level => {
+        const pct = icapStats[level.toLowerCase() as keyof typeof icapStats];
+        if (pct > 0 && rank[level] > bestRank) {
+            bestRank = rank[level];
+            bestIcap = level;
+        }
+    });
+
+    // Headline sentence
+    let headline = `Your session was mostly ${dominantIcap} (${dominantPct}% of activity)`;
+
+    if (bestIcap !== dominantIcap && rank[bestIcap] > rank[dominantIcap]) {
+        headline += `, with a ${bestIcap} stretch during the session.`;
+    } else {
+        headline += `.`;
     }
-  });
 
-  // Headline sentence
-  let headline = `Your session was mostly ${dominantIcap} (${dominantPct}% of activity)`;
-  
-  if (bestIcap !== dominantIcap && rank[bestIcap] > rank[dominantIcap]) {
-    headline += `, with a ${bestIcap} stretch during the session.`;
-  } else {
-    headline += `.`;
-  }
+    // Timing note — describe WHEN the best group happened
+    let timingNote: string | null = null;
+    if (bestIcap !== 'Passive') {
+        const bestGroup = groups.find(g => g.icap === bestIcap);
+        if (bestGroup && bestGroup.windows.length > 0) {
+            const firstWindow = bestGroup.windows[0];
+            const sessionStart = new Date(windowLog[0].timestamp).getTime();
+            const eventTime = new Date(firstWindow.timestamp).getTime();
+            const minutesIn = Math.round((eventTime - sessionStart) / 60000);
 
-  // Timing note — describe WHEN the best group happened
-  let timingNote: string | null = null;
-  if (bestIcap !== 'Passive') {
-    const bestGroup = groups.find(g => g.icap === bestIcap);
-    if (bestGroup && bestGroup.windows.length > 0) {
-      const firstWindow = bestGroup.windows[0];
-      const sessionStart = new Date(windowLog[0].timestamp).getTime();
-      const eventTime = new Date(firstWindow.timestamp).getTime();
-      const minutesIn = Math.round((eventTime - sessionStart) / 60000);
+            let positionLabel = 'partway through';
+            const totalMinutes = Math.round((new Date(windowLog[windowLog.length - 1].timestamp).getTime() - sessionStart) / 60000) || 1;
+            const ratio = minutesIn / totalMinutes;
+            if (ratio < 0.33) positionLabel = 'in the first part of';
+            else if (ratio > 0.66) positionLabel = 'toward the end of';
+            else positionLabel = 'in the middle of';
 
-      let positionLabel = 'partway through';
-      const totalMinutes = Math.round((new Date(windowLog[windowLog.length - 1].timestamp).getTime() - sessionStart) / 60000) || 1;
-      const ratio = minutesIn / totalMinutes;
-      if (ratio < 0.33) positionLabel = 'in the first part of';
-      else if (ratio > 0.66) positionLabel = 'toward the end of';
-      else positionLabel = 'in the middle of';
-
-      timingNote = `Your ${bestIcap} moment happened ${positionLabel} the session, around minute ${minutesIn}.`;
+            timingNote = `Your ${bestIcap} moment happened ${positionLabel} the session, around minute ${minutesIn}.`;
+        }
     }
-  }
 
-  return { headline, timingNote, groups };
+    return { headline, timingNote, groups };
 }
 
 export default function TrainerDashboard({
@@ -497,7 +497,10 @@ export default function TrainerDashboard({
                     body: JSON.stringify({
                         windowLog: lastSession.windowLog,
                         trainerName: TRAINER.name,
-                        topic: lastSession.topic
+                        topic: lastSession.topic,
+                        sessionFormat: lastSession.mode,
+                        trade: lastSession.trade,
+                        learnerCount: lastSession.learnerCount,
                     }),
                     signal: controller.signal
                 });

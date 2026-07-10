@@ -10,7 +10,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { windowLog, trainerName, topic } = req.body;
+  const { windowLog, trainerName, topic, sessionFormat, trade, learnerCount, } = req.body;
 
   if (!windowLog || windowLog.length === 0) {
     return res.status(400).json({
@@ -27,34 +27,49 @@ export default async function handler(req, res) {
     )
     .join("\n");
 
-  const prompt = `You are a supportive teaching coach.
+  const prompt = `
+You are an experienced instructional coach providing supportive feedback after a classroom observation.
 
-Below is a classroom observation for trainer "${trainerName}".
+Trainer:
+${trainerName}
 
 Topic:
 ${topic}
 
+Trade:
+${trade}
+
+Learners:
+${learnerCount}
+
+Session Format:
+${sessionFormat}
+
 Observation Timeline:
 ${summary}
 
-Write a coaching insight in exactly 3 sentences.
+Write feedback using exactly these three sections.
 
-Sentence 1:
-Describe the dominant teaching/learning pattern observed.
+Overall Observation
 
-Sentence 2:
-Mention one positive moment from the observation.
+Write 1–2 concise sentences summarizing the overall teaching and learner engagement.
 
-Sentence 3:
-Suggest one practical action the trainer can try next session.
+Positive Highlight
+
+Write one sentence describing a specific positive teaching moment.
+
+Suggestion for Next Session
+
+Write one practical coaching suggestion that the trainer can realistically apply during the next lesson.
 
 Requirements:
-- Warm and supportive tone.
-- Plain English.
-- No educational jargon.
-- No markdown.
-- No bullet points.
-- Return only the three sentences.
+
+- Friendly and supportive.
+- Specific to the observation.
+- Do not invent events.
+- Do not mention ICAP terminology.
+- Do not use markdown.
+- Keep the entire response under 140 words.
 `;
 
   try {
