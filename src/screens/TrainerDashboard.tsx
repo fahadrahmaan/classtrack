@@ -414,7 +414,7 @@ export default function TrainerDashboard({
     onBack
 }: TrainerDashboardProps) {
     const [expanded, setExpanded] = useState<Record<string, boolean>>({});
-    const [aiInsight, setAiInsight] = useState<string | null>(null);
+    const [aiInsight, setAiInsight] = useState<any>(null);
     const [insightLoading, setInsightLoading] = useState(true);
     const [insightFailed, setInsightFailed] = useState(false);
 
@@ -698,9 +698,26 @@ export default function TrainerDashboard({
                         Analyzing session data...
                     </div>
                 ) : (!insightLoading && !insightFailed && aiInsight) ? (
-                    <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
-                        {aiInsight}
-                    </div>
+                    typeof aiInsight === 'string' ? (
+                        <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>
+                            {aiInsight}
+                        </div>
+                    ) : (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <div>
+                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#2C2118', marginBottom: '4px' }}>Overall Observation</div>
+                                <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>{aiInsight.overallObservation}</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#2C2118', marginBottom: '4px' }}>Positive Highlight</div>
+                                <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>{aiInsight.positiveHighlight}</div>
+                            </div>
+                            <div>
+                                <div style={{ fontSize: '14px', fontWeight: 600, color: '#2C2118', marginBottom: '4px' }}>Suggestion for Next Session</div>
+                                <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>{aiInsight.nextSessionSuggestion}</div>
+                            </div>
+                        </div>
+                    )
                 ) : fallbackNarrative ? (
                     <>
                         <div style={{ fontSize: '15px', color: '#2C2118', lineHeight: '1.6' }}>

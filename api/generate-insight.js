@@ -48,28 +48,27 @@ ${sessionFormat}
 Observation Timeline:
 ${summary}
 
-Write feedback using exactly these three sections.
-
-Overall Observation
-
-Write 1–2 concise sentences summarizing the overall teaching and learner engagement.
-
-Positive Highlight
-
-Write one sentence describing a specific positive teaching moment.
-
-Suggestion for Next Session
-
-Write one practical coaching suggestion that the trainer can realistically apply during the next lesson.
+Return ONLY valid JSON. Return exactly this structure:
+{
+  "overallObservation": "...",
+  "positiveHighlight": "...",
+  "nextSessionSuggestion": "..."
+}
 
 Requirements:
 
+- overallObservation: maximum 2 concise sentences.
+- positiveHighlight: exactly 1 sentence.
+- nextSessionSuggestion: exactly 1 actionable sentence.
 - Friendly and supportive.
 - Specific to the observation.
 - Do not invent events.
 - Do not mention ICAP terminology.
-- Do not use markdown.
-- Keep the entire response under 140 words.
+- No markdown.
+- No bullet points.
+- No additional keys.
+- No explanations outside the JSON.
+- Never wrap the JSON inside code blocks.
 `;
 
   try {
@@ -79,6 +78,7 @@ Requirements:
       config: {
         temperature: 0.7,
         maxOutputTokens: 200,
+        responseMimeType: "application/json",
       },
     });
 
@@ -92,8 +92,24 @@ Requirements:
       });
     }
 
+    let parsedInsight;
+    try {
+      parsedInsight = JSON.parse(insight);
+    } catch (parseError) {
+      console.error("Failed to parse Gemini response as JSON:", insight);
+      return res.status(502).json({
+        error: "Invalid response format from AI",
+      });
+    }
+
+    if (!parsedInsight.overallObservation || !parsedInsight.positiveHighlight || !parsedInsight.nextSessionSuggestion) {
+      return res.status(502).json({
+        error: "Missing required fields in AI response",
+      });
+    }
+
     return res.status(200).json({
-      insight: insight.trim(),
+      insight: parsedInsight,
     });
   } catch (err) {
     console.error("AI insight generation failed:", err);
