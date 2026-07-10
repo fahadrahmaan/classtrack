@@ -100,6 +100,7 @@ export default function App() {
         <ObservationScreen
           setup={setup}
           onEnd={handleEnd}
+          onBack={() => setScreen('setup')}
         />
       )}
       {screen === 'summary' && currentSession && (
@@ -107,6 +108,7 @@ export default function App() {
           session={currentSession}
           onNewSession={handleNewSession}
           onSaved={handleSaved}
+          onBack={() => setScreen('observer-dashboard')}
         />
       )}
       {screen === 'saved' && (
@@ -130,7 +132,7 @@ export default function App() {
           onStartNew={() => setScreen('setup')}
           onViewSaved={() => setScreen('saved')}
           onViewSession={handleViewSession}
-          onLogout={handleLogout}
+          onBack={handleLogout}
         />
       )}
     </div>

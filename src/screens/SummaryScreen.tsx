@@ -8,6 +8,7 @@ interface Props {
   session: SessionData;
   onNewSession: () => void;
   onSaved: () => void;
+  onBack?: () => void;
 }
 
 const ICAP_LEVELS: IcapLevel[] = ['Interactive', 'Constructive', 'Active', 'Passive'];
@@ -214,7 +215,7 @@ function EngagementTimelineChart({
   );
 }
 
-export default function SummaryScreen({ session, onNewSession, onSaved }: Props) {
+export default function SummaryScreen({ session, onNewSession, onSaved, onBack }: Props) {
   const [saved, setSaved] = useState(false);
   const icap = calculateIcap(session.windows);
   const totalDuration = calcTotalDuration(session.startTime, session.endTime);
@@ -229,13 +230,25 @@ export default function SummaryScreen({ session, onNewSession, onSaved }: Props)
     <div className="min-h-screen flex flex-col screen-fade" style={{ background: 'var(--bentonite-bg)' }}>
       {/* Header */}
       <div
-        className="fixed top-0 left-0 right-0 z-20 px-5 py-3"
+        className="fixed top-0 left-0 right-0 z-20 px-5 py-3 flex items-center gap-3"
         style={{
           background: 'var(--bentonite-bg)',
           borderBottom: '1px solid #DDD5C8',
           paddingTop: 'max(12px, env(safe-area-inset-top))',
         }}
       >
+        {onBack && (
+          <button
+            onClick={onBack}
+            className="text-bentonite-text-secondary active:opacity-60 no-select"
+            style={{ minHeight: 44, minWidth: 44 }}
+            aria-label="Go back"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+          </button>
+        )}
         <p className="text-xs font-semibold text-bentonite-text-secondary" style={{ letterSpacing: '0.12em' }}>
           SESSION SUMMARY
         </p>

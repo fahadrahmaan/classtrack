@@ -6,12 +6,12 @@ interface Props {
   onStartNew: () => void;
   onViewSaved: () => void;
   onViewSession: (session: SessionData) => void;
-  onLogout: () => void;
+  onBack: () => void;
 }
 
 const ICAP_LEVELS: IcapLevel[] = ['Interactive', 'Constructive', 'Active', 'Passive'];
 
-export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, onViewSession, onLogout }: Props) {
+export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, onViewSession, onBack }: Props) {
 
   // Calculate aggregate metrics
   const totalSessions = sessions.length;
@@ -40,22 +40,25 @@ export default function ObserverDashboard({ sessions, onStartNew, onViewSaved, o
 
       {/* Header bar */}
       <div
-        className="flex items-center justify-between pb-4 border-b mb-6"
+        className="flex items-center gap-3 pb-4 border-b mb-6"
         style={{ borderColor: 'var(--bentonite-border)', paddingTop: 'max(12px, env(safe-area-inset-top))' }}
       >
+        <button
+            onClick={onBack}
+            className="text-bentonite-text-secondary active:opacity-60 no-select"
+            style={{ minHeight: 44, minWidth: 44 }}
+            aria-label="Go back"
+        >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+        </button>
         <div>
           <h1 className="text-xl font-bold text-bentonite-text-primary tracking-tight">ClassTrack Observer</h1>
           <p className="text-[10px] text-bentonite-text-secondary mt-0.5" style={{ letterSpacing: '0.12em', textTransform: 'uppercase' }}>
             Classroom Observation
           </p>
         </div>
-        <button
-          onClick={onLogout}
-          className="text-xs font-semibold px-3 py-2 rounded-chip border bg-white text-bentonite-text-secondary active:opacity-60 transition-opacity no-select"
-          style={{ borderColor: 'var(--bentonite-border)' }}
-        >
-          Sign Out
-        </button>
       </div>
 
       {/* Greeting banner */}

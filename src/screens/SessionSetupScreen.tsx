@@ -49,36 +49,22 @@ export default function SessionSetupScreen({ onStart, onShowSaved, onShowDashboa
     <div className="min-h-screen flex flex-col screen-fade" style={{ background: 'var(--bentonite-bg)' }}>
       {/* Header */}
       <div className="px-6 pt-14 pb-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+              onClick={onShowDashboard}
+              className="text-bentonite-text-secondary active:opacity-60 no-select -ml-2"
+              style={{ minHeight: 44, minWidth: 44 }}
+              aria-label="Go back"
+          >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7" />
+              </svg>
+          </button>
           <div>
             <h1 className="text-2xl font-bold text-bentonite-text-primary tracking-tight">ClassTrack</h1>
             <p className="text-xs text-bentonite-text-secondary mt-0.5" style={{ letterSpacing: '0.12em', textTransform: 'uppercase' }}>
               Classroom Observation
             </p>
-          </div>
-          <div className="flex items-center gap-4">
-            <button
-              onClick={onShowDashboard}
-              className="flex items-center gap-1.5 text-bentonite-text-secondary active:opacity-60 no-select"
-              style={{ minHeight: 44 }}
-            >
-              <span className="text-sm font-medium">Dashboard</span>
-            </button>
-            <button
-              onClick={onShowSaved}
-              className="flex items-center gap-1.5 text-bentonite-text-secondary active:opacity-60 no-select"
-              style={{ minHeight: 44 }}
-            >
-              <span className="text-sm font-medium">Sessions</span>
-              {savedCount > 0 && (
-                <span
-                  className="text-xs font-semibold text-white rounded-full px-2 py-0.5"
-                  style={{ background: '#5C4A3A' }}
-                >
-                  {savedCount}
-                </span>
-              )}
-            </button>
           </div>
         </div>
       </div>
