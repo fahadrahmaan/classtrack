@@ -329,8 +329,8 @@ function SessionCard({
                     }}
                 >
                     <div className="grid grid-cols-2 gap-2">
-                        <div><strong style={{ color: "#2C2118", fontWeight: 500 }}>Site:</strong> {session.site}</div>
-                        <div><strong style={{ color: "#2C2118", fontWeight: 500 }}>Trade:</strong> {session.trade}</div>
+                        <div><strong style={{ color: "#2C2118", fontWeight: 500 }}>Place:</strong> {session.site}</div>
+                        <div><strong style={{ color: "#2C2118", fontWeight: 500 }}>Course:</strong> {session.trade}</div>
                         <div><strong style={{ color: "#2C2118", fontWeight: 500 }}>Learners:</strong> {session.learnerCount}</div>
                         <div><strong style={{ color: "#2C2118", fontWeight: 500 }}>Mode:</strong> {session.mode}</div>
                     </div>
